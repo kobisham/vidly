@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using vidly.Models;
+using vidly.ViewModels;
 
 namespace vidly.Controllers
 {
@@ -12,10 +13,24 @@ namespace vidly.Controllers
         // GET: Movies
         public ActionResult Random()
         {
-            var movie = new Movie() { Name= "Shrek!"};
-            return View(movie);
-        }
+            var movie = new Movie() { Name = "Shrek!" };
+            var customers = new List<Customer>
+            {
+                new Customer {Name="Customer 1"},
+                new Customer {Name="Customer 2"}
 
+                
+            };
+            
+            var ViewModel = new RandomMovieViewModel()
+            {
+                Movie = movie,
+                Customers = customers
+            };
+
+            return View(ViewModel);
+
+        }
         public ActionResult Edit(int id)
         {
             return Content("ID: " + id);
@@ -24,20 +39,26 @@ namespace vidly.Controllers
         // /Movies
         public ActionResult Index(int? pageIndex, string sortBy)
         {
-            if (!pageIndex.HasValue)
-                pageIndex = 1;
-            if (string.IsNullOrWhiteSpace(sortBy))
-                sortBy = "Name";
+            var movies = GetMovies();
 
-            return Content(string.Format("PageIndex={0}&sortBy={1}", pageIndex, sortBy));
+            return View(movies);
 
-        }
+        } 
 
-        [Route("movies/released/{year}/{month:range(1,12)}")]
+        [Route("movies/released/ByReleaseYear/{year}/{month:range(1,12)}")]
         public ActionResult ByReleaseYear(int year,int month)
         {
             return Content(year + "/" + month);
 
+        }
+
+        private IEnumerable<Movie> GetMovies()
+        {
+            return new List<Movie>
+             {
+                 new Movie { Id = 1, Name = "Shrek" },
+                 new Movie { Id = 2, Name = "Wall-e" }
+             };
         }
     }
 }
